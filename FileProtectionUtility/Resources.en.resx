@@ -138,6 +138,9 @@
   <data name="GeneralErrorString" xml:space="preserve">
     <value>Task failed: </value>
   </data>
+  <data name="InsertPasswordString" xml:space="preserve">
+    <value>Insert password: </value>
+  </data>
   <data name="InvalidExtensionErrorString" xml:space="preserve">
     <value>Invalid extension.</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="MultipleOperationFailedErrorString" xml:space="preserve">
     <value>One or more tasks have failed.</value>
+  </data>
+  <data name="NoPasswordProvidedErrorString" xml:space="preserve">
+    <value>No password provided, task cancelled.</value>
   </data>
   <data name="OperationCompletedString" xml:space="preserve">
     <value>Task complete.</value>
@@ -167,6 +173,7 @@ Options:
 
 -overwrite: overwrites the file if it already exists
 -recurse: executes the command on all files in the folder and the subfolders
+-keeporiginal: keeps the original file
 
 The file path can be either relative or absolute.
 The -recurse option is ignored if the path does not point to a directory

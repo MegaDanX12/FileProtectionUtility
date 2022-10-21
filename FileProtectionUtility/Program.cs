@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 
 namespace FileProtectionUtility
 {
@@ -6,96 +7,132 @@ namespace FileProtectionUtility
     {
         static void Main(string[] args)
         {
-            Console.Title = Resources.ConsoleTitle;
-            Console.WriteLine(Resources.ConsoleTitle);
-            Console.WriteLine();
-            if (args.Length is 0 or 1 or 2)
+            try
             {
-                Console.WriteLine(Resources.ParametersString);
+                Console.Title = Resources.ConsoleTitle;
+                Console.WriteLine(Resources.ConsoleTitle);
                 Console.WriteLine();
-                Console.WriteLine(Resources.ExitString);
-                _ = Console.ReadKey(true);
-            }
-            else
-            {
-                if (args[0] is "/encrypt" or "/decrypt")
+                if (args.Length is 0 or 2)
                 {
-                    string FilePath;
-                    bool IsDirectory;
-                    if (!Path.IsPathFullyQualified(args[1]))
+                    Console.WriteLine(Resources.ParametersString);
+                    Console.WriteLine();
+                    Console.WriteLine(Resources.ExitString);
+                    _ = Console.ReadKey(true);
+                }
+                else
+                {
+                    if (args.Length is 1)
                     {
-                        FilePath = AppDomain.CurrentDomain.BaseDirectory + "\\" + args[1];
-                    }
-                    else
-                    {
-                        FilePath = args[1];
-                    }
-                    IsDirectory = Path.EndsInDirectorySeparator(args[1]);
-                    if (IsDirectory)
-                    {
-                        bool Recurse = args.Contains("-recurse");
-                        string[] FilePaths = Directory.GetFiles(FilePath, "*", Recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-                        bool DeletionFailed = false;
-                        bool OperationFailure = false;
-                        string[] Options = args.Skip(3).ToArray();
-                        foreach (string path in FilePaths)
+                        Console.Write(Resources.InsertPasswordString);
+                        string Password = GetPassword();
+                        Console.WriteLine();
+                        if (!string.IsNullOrWhiteSpace(Password))
                         {
-                            if (RunCommand(args[0], path, args[2], Options, out bool OriginalNotDeleted))
+                            if (RunCommand("/decrypt", args[0], Password, Array.Empty<string>(), out bool OriginalNotDeleted))
                             {
-                                if (!DeletionFailed && OriginalNotDeleted)
+                                if (OriginalNotDeleted)
                                 {
-                                    DeletionFailed = OriginalNotDeleted;
+                                    Console.WriteLine(Resources.DeletionFailedWarningMessageString);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(Resources.OperationCompletedString);
                                 }
                             }
                             else
                             {
-                                OperationFailure = true;
-                            }
-                        }
-                        if (!OperationFailure)
-                        {
-                            if (DeletionFailed)
-                            {
-                                Console.WriteLine(Resources.MultipleDeletionFailedWarningMessageString);
-                            }
-                            else
-                            {
-                                Console.WriteLine(Resources.OperationCompletedString);
+                                Console.WriteLine(Resources.OperationFailedErrorString);
                             }
                         }
                         else
                         {
-                            Console.WriteLine(Resources.MultipleOperationFailedErrorString);
+                            Console.WriteLine(Resources.NoPasswordProvidedErrorString);
+                            Console.WriteLine();
+                            Console.WriteLine(Resources.ExitString);
+                            _ = Console.ReadKey(true);
+                        }
+                    }
+                    if (args[0] is "/encrypt" or "/decrypt")
+                    {
+                        string FilePath;
+                        bool IsDirectory;
+                        if (!Path.IsPathFullyQualified(args[1]))
+                        {
+                            FilePath = AppDomain.CurrentDomain.BaseDirectory + "\\" + args[1];
+                        }
+                        else
+                        {
+                            FilePath = args[1];
+                        }
+                        IsDirectory = Path.EndsInDirectorySeparator(args[1]);
+                        if (IsDirectory)
+                        {
+                            bool Recurse = args.Contains("-recurse");
+                            string[] FilePaths = Directory.GetFiles(FilePath, "*", Recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                            bool DeletionFailed = false;
+                            bool OperationFailure = false;
+                            string[] Options = args.Skip(3).ToArray();
+                            foreach (string path in FilePaths)
+                            {
+                                if (RunCommand(args[0], path, args[2], Options, out bool OriginalNotDeleted))
+                                {
+                                    if (!DeletionFailed && OriginalNotDeleted)
+                                    {
+                                        DeletionFailed = OriginalNotDeleted;
+                                    }
+                                }
+                                else
+                                {
+                                    OperationFailure = true;
+                                }
+                            }
+                            if (!OperationFailure)
+                            {
+                                if (DeletionFailed)
+                                {
+                                    Console.WriteLine(Resources.MultipleDeletionFailedWarningMessageString);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(Resources.OperationCompletedString);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine(Resources.MultipleOperationFailedErrorString);
+                            }
+                        }
+                        else
+                        {
+                            if (RunCommand(args[0], FilePath, args[2], args.Skip(3).ToArray(), out bool OriginalNotDeleted))
+                            {
+                                if (OriginalNotDeleted)
+                                {
+                                    Console.WriteLine(Resources.DeletionFailedWarningMessageString);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(Resources.OperationCompletedString);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine(Resources.OperationFailedErrorString);
+                            }
                         }
                     }
                     else
                     {
-                        Console.WriteLine(Resources.EncryptingString);
-                        Console.WriteLine();
-                        if (RunCommand(args[0], FilePath, args[2], args.Skip(3).ToArray(), out bool OriginalNotDeleted))
-                        {
-                            if (OriginalNotDeleted)
-                            {
-                                Console.WriteLine(Resources.DeletionFailedWarningMessageString);
-                            }
-                            else
-                            {
-                                Console.WriteLine(Resources.OperationCompletedString);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine(Resources.OperationFailedErrorString);
-                        }
+                        Console.WriteLine(Resources.UnrecognizedCommandErrorString);
                     }
+                    Console.WriteLine();
+                    Console.WriteLine(Resources.ExitString);
+                    _ = Console.ReadKey(true);
                 }
-                else
-                {
-                    Console.WriteLine(Resources.UnrecognizedCommandErrorString);
-                }
-                Console.WriteLine();
-                Console.WriteLine(Resources.ExitString);
-                _ = Console.ReadKey(true);
+            }
+            catch (IOException)
+            {
+
             }
         }
 
@@ -114,6 +151,7 @@ namespace FileProtectionUtility
             {
                 using FileStream OriginalFileStream = new(FilePath, FileMode.Open, FileAccess.Read, FileShare.None);
                 bool Result = false;
+                bool DoNotDelete = Options.Contains("-keeporiginal");
                 if (Command is "/encrypt")
                 {
                     bool Overwrite = Options.Contains("-overwrite");
@@ -125,7 +163,10 @@ namespace FileProtectionUtility
                     {
                         try
                         {
-                            File.Delete(FilePath);
+                            if (!DoNotDelete)
+                            {
+                                File.Delete(FilePath);
+                            }
                         }
                         catch (Exception ex) when (ex is IOException or PathTooLongException or UnauthorizedAccessException)
                         {
@@ -146,7 +187,10 @@ namespace FileProtectionUtility
                         {
                             try
                             {
-                                File.Delete(FilePath);
+                                if (!DoNotDelete)
+                                {
+                                    File.Delete(FilePath);
+                                }
                             }
                             catch (Exception ex) when (ex is IOException or PathTooLongException or UnauthorizedAccessException)
                             {
@@ -226,6 +270,38 @@ namespace FileProtectionUtility
                 Console.WriteLine(Resources.GeneralErrorString + ex.Message);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Permette l'inserimento della password per la decodifica di un file.
+        /// </summary>
+        /// <returns>La password.</returns>
+        private static string GetPassword()
+        {
+            ConsoleKeyInfo Key;
+            StringBuilder Password = new();
+            do
+            {
+                Key = Console.ReadKey(true);
+                if (char.IsLetterOrDigit(Key.KeyChar) || char.IsPunctuation(Key.KeyChar) || char.IsSymbol(Key.KeyChar) || char.IsWhiteSpace(Key.KeyChar))
+                {
+                    Console.Write("*");
+                    _ = Password.Append(Key.KeyChar);
+                }
+                else if (Key.Key is ConsoleKey.Backspace)
+                {
+                    if (Password.Length > 0)
+                    {
+                        Password.Length -= 1;
+                        int CursorPosition = Console.CursorLeft;
+                        Console.SetCursorPosition(CursorPosition - 1, Console.CursorTop);
+                        Console.Write(" ");
+                        Console.SetCursorPosition(CursorPosition - 1, Console.CursorTop);
+                    }
+                }
+            }
+            while (Key.Key is not ConsoleKey.Enter);
+            return Password.ToString();
         }
     }
 }

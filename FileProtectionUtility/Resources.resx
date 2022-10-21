@@ -138,6 +138,9 @@
   <data name="GeneralErrorString" xml:space="preserve">
     <value>Operazione non riuscita: </value>
   </data>
+  <data name="InsertPasswordString" xml:space="preserve">
+    <value>Inserire password: </value>
+  </data>
   <data name="InvalidExtensionErrorString" xml:space="preserve">
     <value>Estensione non valida.</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="MultipleOperationFailedErrorString" xml:space="preserve">
     <value>Una o più operazioni non riuscite.</value>
+  </data>
+  <data name="NoPasswordProvidedErrorString" xml:space="preserve">
+    <value>Non è stata digita alcuna password, operazione annullata.</value>
   </data>
   <data name="OperationCompletedString" xml:space="preserve">
     <value>Operazione completata.</value>
@@ -167,6 +173,7 @@ Opzioni:
 
 -overwrite: sovrascrive il file se esiste già
 -recurse: esegue il comando su tutti i file nella directory e nelle sottodirectory
+-keeporiginal: mantiene il file originale
 
 Il percorso del file può essere assoluto o relativo.
 L'opzione -recurse non ha effetto se il percorso non punta a una directory.

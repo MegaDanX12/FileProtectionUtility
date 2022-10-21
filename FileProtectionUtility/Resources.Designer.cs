@@ -124,6 +124,15 @@ namespace FileProtectionUtility {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a Inserire password: .
+        /// </summary>
+        public static string InsertPasswordString {
+            get {
+                return ResourceManager.GetString("InsertPasswordString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a Estensione non valida..
         /// </summary>
         public static string InvalidExtensionErrorString {
@@ -147,6 +156,15 @@ namespace FileProtectionUtility {
         public static string MultipleOperationFailedErrorString {
             get {
                 return ResourceManager.GetString("MultipleOperationFailedErrorString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cerca una stringa localizzata simile a Non è stata digita alcuna password, operazione annullata..
+        /// </summary>
+        public static string NoPasswordProvidedErrorString {
+            get {
+                return ResourceManager.GetString("NoPasswordProvidedErrorString", resourceCulture);
             }
         }
         
@@ -182,10 +200,11 @@ namespace FileProtectionUtility {
         ///
         ///-overwrite: sovrascrive il file se esiste già
         ///-recurse: esegue il comando su tutti i file nella directory e nelle sottodirectory
+        ///-keeporiginal: mantiene il file originale
         ///
         ///Il percorso del file può essere assoluto o relativo.
         ///L&apos;opzione -recurse non ha effetto se il percorso non punta a una directory.
-        ///Se il percorso punta a una directory deve terminare con un s [stringa troncata]&quot;;.
+        ///Se il percorso pu [stringa troncata]&quot;;.
         /// </summary>
         public static string ParametersString {
             get {
